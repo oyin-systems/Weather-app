@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./output.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+  </head>
+  <body>
+    <div class="w-screen">
+      <div
+        class="w-11/12 lg:w-5/12 h-auto text-white mx-auto mt-16 rounded-xl px-4 lg:px-8 py-10 text-center bg-gradient-to-r from-fuchsia-500 to-cyan-500"
+      >
+        <h1 class="text-xl font-bold underline mb-8">Weather App!</h1>
+        <div>
+          <div class="search w-full flex items-center justify-between">
+            <input
+              type="text"
+              placeholder="enter city name"
+              spellcheck="false"
+              class="bg-[#ebfffc] text-gray-600 w-10/12 h-16 rounded-3xl mr-2 text-base outline-0 px-4"
+            />
+            <button class="bg-[#ebfffc] w-16 h-16 cursor-pointer rounded-full">
+              <img src="/images/search.png" alt="search" class="w-4 mx-auto" />
+            </button>
+          </div>
+
+          <div class="error hidden text-left ml-4 mt-4 text-2xl font-semibold">
+            <p>City Not Found!</p>
+          </div>
+
+          <div class="weather hidden">
+            <img src="images/rain.png" alt="rain" class="weather-icon w-[10rem] mx-auto" />
+            <h1 class="temp text-6xl font-bold">31°C</h1>
+            <h2 class="city text-3xl font-semibold">Ikeja</h2>
+            <div class="grid grid-cols-2 items-center justify-between mt-8 px-5 gap-4">
+              <div class="flex items-center text-left">
+                <img
+                  src="images/humidity.png"
+                  alt="humidity"
+                  class="w-10 mr-4 lg:mr-8"
+                />
+                <div>
+                  <p class="humidity text-2xl">50%</p>
+                  <p>Humidity</p>
+                </div>
+              </div>
+              <div class="flex items-center text-left">
+                <img src="images/wind.png" alt="wind" class="w-10 mr-4 lg:mr-8" />
+                <div>
+                  <p class="wind text-2xl">15km/h</p>
+                  <p>Wind Speed</p>
+                </div>
+              </div>
+              <div class="flex items-center text-left">
+                <img
+                  src="images/winddeg.png"
+                  alt="winddeg"
+                  class="w-10 mr-4 lg:mr-8"
+                />
+                <div>
+                  <p class="winddeg text-2xl">50%</p>
+                  <p>Wind Degree</p>
+                </div>
+              </div>
+              <div class="flex items-center text-left">
+                <img
+                  src="images/pressure.png"
+                  alt="pressure"
+                  class="w-10 mr-4 lg:mr-8"
+                />
+                <div>
+                  <p class="pressure text-2xl">50%</p>
+                  <p>Pressure</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiKey = "a91074f9c3b7285ecf8b3dd3b52a76bb";
+      const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+  
+      const searchBox = document.querySelector(".search input");
+      const searchBtn = document.querySelector(".search button");
+      const weatherIcon = document.querySelector(".weather-icon");
+      
+      async function checkWeather(city){
+        const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+        
+        //to check for correct city and update the page accordingly
+        if(response.status == 404){
+          document.querySelector(".error").style.display = "block";
+          document.querySelector(".weather").style.display = "none";
+        } else {
+
+        
+        var data = await response.json();
+        console.log(data);
+
+        //to update fields 
+        document.querySelector(".city").innerHTML = data.name + "," + " " + data.sys.country;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+        //to update image based on the weather condition
+        if(data.weather[0].main == "Clouds"){
+          weatherIcon.src = "images/clouds.png"
+        }
+        else if(data.weather[0].main == "Clear"){
+          weatherIcon.src = "images/clear.png"
+        } 
+        else if(data.weather[0].main == "Rain"){
+          weatherIcon.src = "images/rain.png"
+        } else if(data.weather[0].main == "Drizzle"){
+          weatherIcon.src = "images/drizzle.png"
+        } else if(data.weather[0].main == "Mist"){
+          weatherIcon.src = "images/mist.png"
+        }
+
+        //to hide info until a user enters a city name
+        document.querySelector(".weather").style.display = "block";
+        document.querySelector(".error").style.display = "none";
+      }
+      }
+      searchBtn.addEventListener("click", ()=> {
+        checkWeather(searchBox.value);
+      })
+    </script>
+  </body>
+</html>
